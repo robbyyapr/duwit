@@ -1,0 +1,41 @@
+# fly.toml app configuration file generated for duwit on 2025-09-20T20:36:38+07:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'duwit'
+primary_region = 'sin'
+
+[build]
+  dockerfile = 'Dockerfile'
+
+[env]
+  DATA_DIR = '/data'
+  NODE_ENV = 'production'
+
+[[mounts]]
+  source = 'duwit_data'
+  destination = '/data'
+  processes = ['app']
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[checks]
+  [checks.http]
+    port = 8080
+    type = 'http'
+    interval = '15s'
+    timeout = '5s'
+    grace_period = '10s'
+    path = '/api/health'
+
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '256'
+  processes = ['app']

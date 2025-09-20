@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { DuitStore, Transaction, BalanceHistory, DuitStore as DuitStoreType } from '../types';
 import { getToday, getISOWeek, getISOWeekRange } from '../utils/dateUtils';
 
-const STORE_KEY = 'duit.store.v1';
+const STORE_ENDPOINT = import.meta.env.VITE_STORE_ENDPOINT ?? '/api/store';
 
 const getDefaultStore = (): DuitStore => ({
   settings: {
@@ -23,39 +23,107 @@ const getDefaultStore = (): DuitStore => ({
   lastDailyNotif: '',
 });
 
+const sanitizeStore = (data: unknown): DuitStore => {
+  const defaults = getDefaultStore();
+  if (!data || typeof data !== 'object') {
+    return defaults;
+  }
+
+  const incoming = data as Partial<DuitStore>;
+
+  return {
+    settings: {
+      ...defaults.settings,
+      ...(incoming.settings ?? {}),
+    },
+    balances: {
+      current: incoming.balances?.current ?? defaults.balances.current,
+      history: Array.isArray(incoming.balances?.history) ? incoming.balances.history as BalanceHistory[] : defaults.balances.history,
+    },
+    zakat: {
+      weekly: Array.isArray(incoming.zakat?.weekly) ? incoming.zakat.weekly : defaults.zakat.weekly,
+    },
+    lastActivityAt: incoming.lastActivityAt ?? defaults.lastActivityAt,
+    lastDailyNotif: incoming.lastDailyNotif ?? defaults.lastDailyNotif,
+  };
+};
+
 export const useDuitStore = () => {
   const [store, setStore] = useState<DuitStore>(getDefaultStore());
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const savedStore = localStorage.getItem(STORE_KEY);
-      if (savedStore) {
-        const parsedStore = JSON.parse(savedStore);
-        // Basic migration/defaulting for new settings
-        if (!parsedStore.settings.hasOwnProperty('deductZakatFromBalance')) {
-            parsedStore.settings.deductZakatFromBalance = false;
+    let isCancelled = false;
+
+    const loadStore = async () => {
+      try {
+        const response = await fetch(STORE_ENDPOINT, {
+          headers: {
+            Accept: 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to load store. Status: ${response.status}`);
         }
-        setStore(parsedStore);
-      } else {
-        setStore(getDefaultStore());
+
+        const payload = await response.json();
+        if (!isCancelled) {
+          setStore(sanitizeStore(payload));
+        }
+      } catch (error) {
+        console.error('Failed to load data from server', error);
+        if (!isCancelled) {
+          setStore(getDefaultStore());
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
       }
-    } catch (error) {
-      console.error("Failed to load data from localStorage", error);
-      setStore(getDefaultStore());
-    } finally {
-      setIsLoading(false);
-    }
+    };
+
+    loadStore();
+
+    return () => {
+      isCancelled = true;
+    };
   }, []);
 
   useEffect(() => {
-    if (!isLoading) {
-      try {
-        localStorage.setItem(STORE_KEY, JSON.stringify(store));
-      } catch (error) {
-        console.error("Failed to save data to localStorage", error);
-      }
+    if (isLoading) {
+      return;
     }
+
+    const controller = new AbortController();
+
+    const persistStore = async () => {
+      try {
+        const response = await fetch(STORE_ENDPOINT, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(store),
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to persist store. Status: ${response.status}`);
+        }
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+        console.error('Failed to save data to server', error);
+      }
+    };
+
+    persistStore();
+
+    return () => {
+      controller.abort();
+    };
   }, [store, isLoading]);
 
   const updateStore = useCallback((updater: (currentStore: DuitStore) => DuitStore) => {
