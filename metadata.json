@@ -1,0 +1,5 @@
+{
+  "name": "duit - Personal Trading & Zakat Tracker",
+  "description": "A single-page application to track daily trading finances and automatically calculate and manage weekly Zakat liabilities, built with a neumorphism design.",
+  "requestFramePermissions": []
+}

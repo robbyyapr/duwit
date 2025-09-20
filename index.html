@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>duit - Personal Trading & Zakat Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              light: {
+                bg: '#E0E5EC',
+                primary: '#4A5568',
+                accent: '#3182CE',
+              },
+              dark: {
+                bg: '#2D3748',
+                primary: '#E2E8F0',
+                accent: '#63B3ED',
+              },
+            },
+            boxShadow: {
+              'neumorphic-outset': '8px 8px 16px #cbcfd4, -8px -8px 16px #ffffff',
+              'neumorphic-inset': 'inset 8px 8px 16px #cbcfd4, inset -8px -8px 16px #ffffff',
+              'dark-neumorphic-outset': '8px 8px 16px #242b38, -8px -8px 16px #364358',
+              'dark-neumorphic-inset': 'inset 8px 8px 16px #242b38, inset -8px -8px 16px #364358',
+            },
+          },
+        },
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.js"></script>
+  <script type="importmap">
+{
+  "imports": {
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/",
+    "react/": "https://aistudiocdn.com/react@^19.1.1/",
+    "react": "https://aistudiocdn.com/react@^19.1.1"
+  }
+}
+</script>
+</head>
+  <body class="bg-light-bg dark:bg-dark-bg transition-colors duration-300">
+    <div id="root"></div>
+  </body>
+</html>
