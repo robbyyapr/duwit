@@ -1,4 +1,5 @@
 
+
 import { useState, useEffect, useCallback } from 'react';
 import { DuitStore, Transaction, BalanceHistory, DuitStore as DuitStoreType } from '../types';
 import { getToday, getISOWeek, getISOWeekRange } from '../utils/dateUtils';
@@ -135,7 +136,7 @@ export const useDuitStore = () => {
       const { capitalUsed, withdraw } = txData;
       const profit = Math.max(0, withdraw - capitalUsed);
       const zakat = profit > 0 ? Math.floor(profit * 0.025) : 0;
-      const newTx: Transaction = { ...txData, id: Date.now().toString(), profit, zakat };
+      const newTx: Transaction = { ...txData, id: crypto.randomUUID(), profit, zakat };
 
       const dateStr = newTx.time.split('T')[0];
       const historyCopy = [...currentStore.balances.history];
@@ -213,7 +214,7 @@ export const useDuitStore = () => {
             let todayHistory = historyCopy.find(h => h.date === todayStr);
 
             const zakatPaymentTx: Transaction = {
-                id: `zakat_payment_${Date.now()}`,
+                id: crypto.randomUUID(),
                 time: new Date().toISOString(),
                 capitalUsed: week.accrued,
                 withdraw: 0,
@@ -265,7 +266,7 @@ export const useDuitStore = () => {
       if (adjustment === 0) return currentStore;
 
       const adjustmentTx: Transaction = {
-        id: `adj_${Date.now()}`,
+        id: crypto.randomUUID(),
         time: new Date().toISOString(),
         capitalUsed: adjustment < 0 ? Math.abs(adjustment) : 0,
         withdraw: adjustment > 0 ? adjustment : 0,

@@ -67,11 +67,11 @@ const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
   const hourHandRotation = (hours % 12) * 30 + minutes * 0.5;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-light-bg dark:bg-dark-bg p-4">
-      <Card className="w-full max-w-sm text-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-light-bg dark:bg-dark-bg p-4 overflow-y-auto">
+      <Card className="w-full max-w-sm text-center my-auto">
         <h2 className="text-2xl font-bold mb-4">Aplikasi Terkunci</h2>
         
-        <div className="w-48 h-48 mx-auto mb-2">
+        <div className="w-40 h-40 mx-auto mb-4">
             <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-lg">
                 <g className="shadow-neumorphic-inset dark:shadow-dark-neumorphic-inset">
                     <circle cx="50" cy="50" r="48" className="fill-light-bg dark:fill-dark-bg" />
@@ -99,7 +99,7 @@ const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
                 <circle cx="50" cy="50" r="1" className="fill-current text-light-accent dark:text-dark-accent" />
             </svg>
         </div>
-        <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-6">
+        <p className="text-sm font-semibold text-gray-500 dark:text-gray-400 mb-4">
             {currentTime.toLocaleDateString('id-ID', {
                 weekday: 'long',
                 day: 'numeric',
@@ -112,10 +112,10 @@ const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
             type="password"
             value={'*'.repeat(input.length)}
             readOnly
-            className="w-full h-12 mb-4 text-center text-3xl tracking-[.5em] bg-transparent rounded-lg shadow-neumorphic-inset dark:shadow-dark-neumorphic-inset"
+            className="w-full h-11 mb-3 text-center text-3xl tracking-[.5em] bg-transparent rounded-lg shadow-neumorphic-inset dark:shadow-dark-neumorphic-inset"
             placeholder="PIN"
           />
-          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
         </form>
         
         <div className="grid grid-cols-3 gap-3">
@@ -123,13 +123,13 @@ const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
             <button
               key={btn}
               onClick={() => handleInput(btn)}
-              className="h-16 text-xl font-bold rounded-2xl shadow-neumorphic-outset dark:shadow-dark-neumorphic-outset active:shadow-neumorphic-inset active:dark:shadow-dark-neumorphic-inset transition-all"
+              className="h-14 text-xl font-bold rounded-2xl shadow-neumorphic-outset dark:shadow-dark-neumorphic-outset active:shadow-neumorphic-inset active:dark:shadow-dark-neumorphic-inset transition-all"
             >
               {btn === 'del' ? '⌫' : btn}
             </button>
           ))}
         </div>
-         <button onClick={handleUnlockAttempt} className="mt-4 w-full h-14 bg-light-accent text-white dark:bg-dark-accent dark:text-dark-bg font-bold rounded-2xl shadow-neumorphic-outset dark:shadow-dark-neumorphic-outset active:shadow-neumorphic-inset active:dark:shadow-dark-neumorphic-inset transition-all">
+         <button onClick={handleUnlockAttempt} className="mt-4 w-full h-12 bg-light-accent text-white dark:bg-dark-accent dark:text-dark-bg font-bold rounded-2xl shadow-neumorphic-outset dark:shadow-dark-neumorphic-outset active:shadow-neumorphic-inset active:dark:shadow-dark-neumorphic-inset transition-all">
           Buka Kunci
         </button>
       </Card>

@@ -111,7 +111,23 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ history, theme }) => {
                         return label;
                     }
                 }
-            }
+            },
+            zoom: {
+                pan: {
+                    enabled: true,
+                    mode: 'x',
+                    modifierKey: 'ctrl',
+                },
+                zoom: {
+                    wheel: {
+                        enabled: true,
+                    },
+                    pinch: {
+                        enabled: true,
+                    },
+                    mode: 'x',
+                },
+            },
         }
       },
     });
@@ -135,6 +151,9 @@ const AnalyticsChart: React.FC<AnalyticsChartProps> = ({ history, theme }) => {
       <div className="relative h-64 sm:h-80">
         <canvas ref={chartRef}></canvas>
       </div>
+      <p className="text-xs text-center text-gray-400 mt-2">
+        Gunakan scroll untuk zoom. Tahan 'Ctrl' + drag untuk menggeser.
+      </p>
     </Card>
   );
 };
